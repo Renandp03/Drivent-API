@@ -14,9 +14,11 @@ export async function getTicketsType(req: AuthenticatedRequest, res: Response) {
 
 export async function getTickets(req: AuthenticatedRequest, res: Response) {
   try {
-    const tickets = await ticketServices.findAllTyckets();
-    res.send(tickets);
+    const userId = req.userId;
+    const ticket = await ticketServices.findUserTicket(userId);
+
+    res.send(ticket);
   } catch (error) {
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).send('some problems in the server');
+    res.status(httpStatus.NOT_FOUND).send('You heve no ticket yet');
   }
 }

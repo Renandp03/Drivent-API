@@ -10,18 +10,23 @@ async function findAllTicketTypes(): Promise<TicketType[]> {
 }
 
 async function findUserTicket(userId: number): Promise<Ticket> {
-  const data = await ticketRepositories.findTicket(userId);
+  const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+  if (!enrollment) throw genericError(404, 'You have no enrollment for this.');
 
-  if (!data) throw notFoundError;
+  const data = await ticketRepositories.findTicket(enrollment.id);
+  if (!data) throw genericError(404, 'You have no Tickets.');
 
   return data;
 }
 
 async function createNewTicket(userId: number, ticketTypeId: number) {
-  const enrollment = enrollmentRepository.findWithAddressByUserId(userId);
-  if (!enrollment) throw genericError(404, 'You have no enrollment for this.');
+  if (!ticketTypeId) throw genericError(400, 'You need to send a ticketTipe for this.');
 
-  const data = await ticketRepositories.createTicket(userId, ticketTypeId);
+  const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+  if (!enrollment) throw genericError(404, 'You have no enrollment for this.');
+  const enrollmentId = enrollment.id;
+
+  const data = await ticketRepositories.createTicket(enrollmentId, ticketTypeId);
   return data;
 }
 

@@ -19,18 +19,18 @@ export async function getTicket(req: AuthenticatedRequest, res: Response) {
 
     res.send(ticket);
   } catch (error) {
-    res.status(httpStatus.NOT_FOUND).send('You heve no ticket yet');
+    res.status(error.status).send(error.message);
   }
 }
 
-export async function createTicket(req: AuthenticatedRequest, res: Response) {
+export async function postTicket(req: AuthenticatedRequest, res: Response) {
   try {
     const { ticketTypeId } = req.body;
     const userId = req.userId;
 
     const ticket = await ticketServices.createNewTicket(userId, ticketTypeId);
-    res.status(httpStatus.CREATED).send(ticket);
+    res.status(201).send(ticket);
   } catch (error) {
-    res.status(httpStatus.NOT_FOUND).send(error.message);
+    res.status(error.status).send(error.message);
   }
 }

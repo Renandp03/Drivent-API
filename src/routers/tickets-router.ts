@@ -6,7 +6,7 @@ import { createEnrollmentSchema } from '@/schemas';
 const ticketsRouter = Router();
 
 ticketsRouter
-  // .all('/*', authenticateToken)
+  .all('/*', authenticateToken)
   .get('/types', getTicketsType)
   .get('/', getTicket)
   .post('/', validateBody(createEnrollmentSchema), () => console.log('rodando corretamente'));

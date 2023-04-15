@@ -1,5 +1,7 @@
 import { TicketType, Ticket } from '@prisma/client';
 import { notFoundError } from '@/errors';
+import { genericError } from '@/errors/generic-error';
+import enrollmentRepository from '@/repositories/enrollment-repository';
 import ticketRepositories from '@/repositories/ticket-repository';
 
 async function findAllTicketTypes(): Promise<TicketType[]> {
@@ -16,9 +18,11 @@ async function findUserTicket(userId: number): Promise<Ticket> {
 }
 
 async function createNewTicket(userId: number, ticketTypeId: number) {
-  if (!ticketTypeId) throw new Error();
+  const enrollment = enrollmentRepository.findWithAddressByUserId(userId);
+  if (!enrollment) throw genericError(404, 'You have no enrollment for this.');
 
-  await ticketRepositories.createTicket(userId, ticketTypeId);
+  const data = await ticketRepositories.createTicket(userId, ticketTypeId);
+  return data;
 }
 
 const ticketServices = { findAllTicketTypes, findUserTicket, createNewTicket };

@@ -9,22 +9,23 @@ async function findTicket(userId: number): Promise<Ticket> {
   return prisma.ticket.findFirst({ where: { enrollmentId: userId } });
 }
 
-async function createTicket(userId: number, ticketTypeId: number) {
+async function createTicket(enrollmentId: number, ticketTypeId: number) {
   return prisma.ticket.create({
     data: {
+      TicketType: {
+        connect: {
+          id: ticketTypeId,
+        },
+      },
+      Enrollment: {
+        connect: {
+          id: enrollmentId,
+        },
+      },
       status: 'RESERVED',
-      ticketTypeId,
-      enrollmentId: userId,
     },
     include: {
       TicketType: true,
-    },
-  });
-}
-async function findNewticket(userId: number, ticketTypeId: number) {
-  return prisma.ticket.findFirst({
-    where: {
-      enrollmentId: userId,
     },
   });
 }

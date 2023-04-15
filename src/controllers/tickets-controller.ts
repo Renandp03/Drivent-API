@@ -12,7 +12,7 @@ export async function getTicketsType(req: AuthenticatedRequest, res: Response) {
   }
 }
 
-export async function getTickets(req: AuthenticatedRequest, res: Response) {
+export async function getTicket(req: AuthenticatedRequest, res: Response) {
   try {
     const userId = req.userId;
     const ticket = await ticketServices.findUserTicket(userId);
@@ -20,5 +20,17 @@ export async function getTickets(req: AuthenticatedRequest, res: Response) {
     res.send(ticket);
   } catch (error) {
     res.status(httpStatus.NOT_FOUND).send('You heve no ticket yet');
+  }
+}
+
+export async function createType(req: AuthenticatedRequest, res: Response) {
+  try {
+    const { ticketTypeId } = req.body;
+    const userId = req.userId;
+
+    const ticket = await ticketServices.createNewTicket(userId, ticketTypeId);
+    res.status(httpStatus.CREATED).send(ticket);
+  } catch (error) {
+    res.status(500).send('error');
   }
 }

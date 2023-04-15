@@ -9,6 +9,26 @@ async function findTicket(userId: number): Promise<Ticket> {
   return prisma.ticket.findFirst({ where: { enrollmentId: userId } });
 }
 
-const ticketRepositories = { findTicket, findTicketTypes };
+async function createTicket(userId: number, ticketTypeId: number) {
+  return prisma.ticket.create({
+    data: {
+      status: 'RESERVED',
+      ticketTypeId,
+      enrollmentId: userId,
+    },
+    include: {
+      TicketType: true,
+    },
+  });
+}
+async function findNewticket(userId: number, ticketTypeId: number) {
+  return prisma.ticket.findFirst({
+    where: {
+      enrollmentId: userId,
+    },
+  });
+}
+
+const ticketRepositories = { findTicket, findTicketTypes, createTicket };
 
 export default ticketRepositories;

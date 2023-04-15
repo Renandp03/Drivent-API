@@ -15,6 +15,12 @@ async function findUserTicket(userId: number): Promise<Ticket> {
   return data;
 }
 
-const ticketServices = { findAllTicketTypes, findUserTicket };
+async function createNewTicket(userId: number, ticketTypeId: number) {
+  if (!ticketTypeId) throw new Error();
+
+  await ticketRepositories.createTicket(userId, ticketTypeId);
+}
+
+const ticketServices = { findAllTicketTypes, findUserTicket, createNewTicket };
 
 export default ticketServices;

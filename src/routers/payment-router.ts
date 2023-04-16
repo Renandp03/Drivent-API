@@ -8,6 +8,6 @@ const paymentRouter = Router();
 paymentRouter
   .all('/*', authenticateToken)
   .get('/', getTicketPayment)
-  .post('/', validateBody(paymentSchema), processPayment);
+  .post('/process', validateBody(paymentSchema), processPayment);
 
 export { paymentRouter };

@@ -18,13 +18,22 @@ async function findTicketPayment(userId: number, ticketId: number) {
 }
 
 async function makePayment(userId: number, ticketId: number, cardData: cardData) {
-  if (!ticketId || !cardData) throw genericError(400, 'Please enter your ticket id and card details.');
+  const ticket = await ticketRepositories.ticketInfosForPayment(ticketId);
+  if (!ticket) throw genericError(404, 'error');
 
-  const ticket = await ticketRepositories.findTicketByid(ticketId);
-  if (!ticket) throw genericError(404, 'Ticket not foud');
+  const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+  if (ticket.enrollmentId != enrollment.id) throw genericError(401, 'this ticket is not yours.');
 
-  const { id } = await ticketRepositories.findTicketByEnrollment(userId);
-  if (id != ticket.enrollmentId) throw genericError(401, 'This ticket is not yours.');
+  const inputPayment = {
+    ticketId,
+    value: ticket.TicketType.price,
+    cardIssuer: cardData.issuer, // VISA | MASTERCARD
+    cardLastDigits: String(cardData.number).slice(-4),
+  };
+  await ticketRepositories.updateTicketStatus(ticketId);
+
+  const data = await paymentRepositories.createNewPayment(inputPayment);
+  return data;
 }
 
 type cardData = {

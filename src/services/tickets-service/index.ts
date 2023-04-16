@@ -20,6 +20,7 @@ async function findUserTicket(userId: number): Promise<Ticket> {
 
 async function createNewTicket(userId: number, ticketTypeId: number) {
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+  if (!enrollment) throw genericError(404, 'You have no enrollment for this.');
   const enrollmentId = enrollment.id;
 
   const data = await ticketRepositories.createTicket(enrollmentId, ticketTypeId);

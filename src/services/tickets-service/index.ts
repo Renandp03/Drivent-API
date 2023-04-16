@@ -19,10 +19,7 @@ async function findUserTicket(userId: number): Promise<Ticket> {
 }
 
 async function createNewTicket(userId: number, ticketTypeId: number) {
-  if (!ticketTypeId) throw genericError(400, 'You need to send a ticketTipe for this.');
-
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
-  if (!enrollment) throw genericError(404, 'You have no enrollment for this.');
   const enrollmentId = enrollment.id;
 
   const data = await ticketRepositories.createTicket(enrollmentId, ticketTypeId);

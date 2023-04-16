@@ -1,4 +1,3 @@
-import { Payment } from '@prisma/client';
 import paymentRepositories from '@/repositories/payment-repositoy';
 import { genericError } from '@/errors/generic-error';
 import ticketRepositories from '@/repositories/ticket-repository';

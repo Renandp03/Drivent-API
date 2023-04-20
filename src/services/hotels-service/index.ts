@@ -8,9 +8,16 @@ async function showHotels(userId: number) {
   if (!payedTicketUser.Ticket) throw unauthorizedError;
 
   const data = await hotelRepository.findHotels();
+  console.log(data);
   return data;
 }
 
-const hotelService = { showHotels };
+async function getRoomsFronHotel(id: number) {
+  const data = await hotelRepository.findRoomsFromHotel(id);
+  console.log(data);
+  return data;
+}
+
+const hotelService = { showHotels, getRoomsFronHotel };
 
 export default hotelService;

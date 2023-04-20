@@ -17,6 +17,17 @@ async function payedTicketUser(id: number) {
   });
 }
 
-const hotelRepository = { findHotels, payedTicketUser };
+async function findRoomsFromHotel(id: number) {
+  return prisma.hotel.findMany({
+    where: {
+      id,
+    },
+    include: {
+      Rooms: true,
+    },
+  });
+}
+
+const hotelRepository = { findHotels, payedTicketUser, findRoomsFromHotel };
 
 export default hotelRepository;

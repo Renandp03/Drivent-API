@@ -5,9 +5,20 @@ import hotelService from '@/services/hotels-service';
 
 export async function getHotels(req: AuthenticatedRequest, res: Response) {
   try {
-    const result = await hotelService.showHotels();
+    const userId = req.userId;
+    const result = await hotelService.showHotels(userId);
     res.send(result);
   } catch (error) {
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error.message);
+    if ((error.name = '')) {
+      return res.status(httpStatus.UNAUTHORIZED).send(error.message);
+    }
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error);
+  }
+}
+
+export async function getRoomsFronHotel(req: AuthenticatedRequest, res: Response) {
+  try {
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error);
   }
 }

@@ -5,16 +5,18 @@ async function findHotels() {
 }
 
 async function payedTicketUser(id: number) {
-  return prisma.ticket.findFirst({
+  return prisma.enrollment.findFirst({
     where: {
-      enrollmentId: id,
+      id,
     },
     include: {
-      Enrollment: true,
+      Ticket: {
+        where: { status: 'PAID' },
+      },
     },
   });
 }
 
-const hotelRepository = { findHotels };
+const hotelRepository = { findHotels, payedTicketUser };
 
 export default hotelRepository;

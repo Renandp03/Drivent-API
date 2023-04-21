@@ -12,9 +12,15 @@ async function showHotels(userId: number) {
   return data;
 }
 
-async function getRoomsFronHotel(id: number) {
-  const data = await hotelRepository.findRoomsFromHotel(id);
+async function getRoomsFronHotel(hotelId: number, userId: number) {
+  const payedTicketUser = await hotelRepository.payedTicketUser(userId);
+  console.log(payedTicketUser);
+  if (!payedTicketUser.Ticket) throw unauthorizedError;
+
+  const data = await hotelRepository.findRoomsFromHotel(hotelId);
   console.log(data);
+  if (!data) throw unauthorizedError;
+
   return data;
 }
 

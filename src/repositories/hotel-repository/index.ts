@@ -12,6 +12,13 @@ async function payedTicketUser(id: number) {
     include: {
       Ticket: {
         where: { status: 'PAID' },
+        include: {
+          TicketType: {
+            select: {
+              isRemote: true,
+            },
+          },
+        },
       },
     },
   });

@@ -187,8 +187,7 @@ describe('whe token is valid', () => {
     const token = await generateValidToken(user);
     const enrollment = await createEnrollmentWithAddress(user);
     const ticketType = await createNotRemoteTicketType();
-    console.log(ticketType);
-    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+    await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
     const response = await server.get('/hotels/11561').set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(404);
   });

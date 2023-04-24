@@ -16,6 +16,7 @@ async function payedTicketUser(id: number) {
           TicketType: {
             select: {
               isRemote: true,
+              includesHotel: true,
             },
           },
         },

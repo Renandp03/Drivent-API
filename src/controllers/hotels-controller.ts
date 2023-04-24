@@ -6,13 +6,10 @@ import hotelService from '@/services/hotels-service';
 export async function getHotels(req: AuthenticatedRequest, res: Response) {
   try {
     const userId = req.userId;
-    const result = await hotelService.showHotels(userId);
-    res.send(result);
+    const hotels = await hotelService.showHotels(userId);
+    res.send(hotels);
   } catch (error) {
-    if ((error.name = '')) {
-      return res.status(httpStatus.UNAUTHORIZED).send(error.message);
-    }
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error);
+    res.status(error.status).send(error.message);
   }
 }
 

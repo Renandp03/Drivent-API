@@ -1,7 +1,6 @@
 import hotelRepository from '@/repositories/hotel-repository';
 import enrollmentRepository from '@/repositories/enrollment-repository';
 import ticketRepositories from '@/repositories/ticket-repository';
-import { unauthorizedError } from '@/errors';
 import { genericError } from '@/errors/generic-error';
 
 async function showHotels(userId: number) {
@@ -27,11 +26,11 @@ async function validateTicket(userId: number) {
 
   const ticket = await ticketRepositories.findTicketByEnrollment(enrollment.id);
   if (!ticket) throw genericError(404, 'no ticket');
+  if (ticket.status != 'PAID') throw genericError(402, 'ticket not paid yet');
 
-  const userPaidTicket = await hotelRepository.userPaidTicket(enrollment.id);
-  if (!userPaidTicket) throw genericError(402, 'ticket not paid yet.');
-  if (userPaidTicket.TicketType.isRemote == true) throw genericError(402, 'this is a remote show.');
-  if (userPaidTicket.TicketType.includesHotel == false) throw genericError(402, 'this ticket do not includes hotel.');
+  const ticketType = await ticketRepositories.findTicketTipeById(ticket.ticketTypeId);
+  if (ticketType.isRemote == true) throw genericError(402, 'this is a remote show.');
+  if (ticketType.includesHotel == false) throw genericError(402, 'this ticket do not includes hotel.');
 }
 
 const hotelService = { showHotels, getRoomsFromHotel };

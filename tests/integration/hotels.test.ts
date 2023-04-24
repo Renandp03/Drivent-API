@@ -3,8 +3,15 @@ import faker from '@faker-js/faker';
 import supertest from 'supertest';
 import * as jwt from 'jsonwebtoken';
 import { TicketStatus } from '@prisma/client';
+import { response } from 'express';
 import { cleanDb, generateValidToken } from '../helpers';
-import { createUser, createTicketType, createEnrollmentWithAddress, createTicket } from '../factories';
+import {
+  createUser,
+  createTicketType,
+  createRemoteTicketType,
+  createEnrollmentWithAddress,
+  createTicket,
+} from '../factories';
 import { prisma } from '@/config';
 import app, { init } from '@/app';
 
@@ -61,6 +68,28 @@ describe('When token is valid', () => {
     const response = await server.get('/tickets').set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toEqual(httpStatus.NOT_FOUND);
+  });
+
+  it('should respond with status 402 when ticket is not paid yet.', async () => {
+    const user = await createUser();
+    const token = await generateValidToken(user);
+    const enrollment = await createEnrollmentWithAddress(user);
+    const ticketType = await createTicketType();
+    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
+
+    const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
+    expect(response.status).toBe(402);
+  });
+
+  it('should respond with status 402 when ticket is remote.', async () => {
+    const user = await createUser();
+    const token = await generateValidToken(user);
+    const enrollment = await createEnrollmentWithAddress(user);
+    const ticketType = await createRemoteTicketType();
+    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+
+    const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
+    expect(response.status).toBe(402);
   });
 
   // it('should response whith status 404 when hotel id is not falid', async () => {

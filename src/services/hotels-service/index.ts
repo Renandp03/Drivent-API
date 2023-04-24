@@ -1,3 +1,4 @@
+import { Hotel } from '@prisma/client';
 import hotelRepository from '@/repositories/hotel-repository';
 import enrollmentRepository from '@/repositories/enrollment-repository';
 import ticketRepositories from '@/repositories/ticket-repository';
@@ -6,7 +7,7 @@ import { genericError } from '@/errors/generic-error';
 async function showHotels(userId: number) {
   validateTicket(userId);
 
-  const data = await hotelRepository.findHotels();
+  const data: Hotel[] = await hotelRepository.findHotels();
   if (!data[0]) throw genericError(404, 'not found hotels');
   return data;
 }

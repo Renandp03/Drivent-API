@@ -21,6 +21,6 @@ export async function getRoomsFronHotel(req: AuthenticatedRequest, res: Response
     const Rooms = await hotelService.getRoomsFronHotel(hotelId, userId);
     return res.send(Rooms);
   } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error);
+    res.status(error.status).send(error.message);
   }
 }

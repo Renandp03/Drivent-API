@@ -13,12 +13,12 @@ export async function getHotels(req: AuthenticatedRequest, res: Response) {
   }
 }
 
-export async function getRoomsFronHotel(req: AuthenticatedRequest, res: Response) {
+export async function getRoomsFromHotel(req: AuthenticatedRequest, res: Response) {
   try {
     const hotelId = Number(req.params.hotelId);
     const userId = req.userId;
 
-    const Rooms = await hotelService.getRoomsFronHotel(hotelId, userId);
+    const Rooms = await hotelService.getRoomsFromHotel(hotelId, userId);
     return res.send(Rooms);
   } catch (error) {
     res.status(error.status).send(error.message);

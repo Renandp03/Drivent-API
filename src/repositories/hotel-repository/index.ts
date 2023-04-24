@@ -4,21 +4,17 @@ async function findHotels() {
   return prisma.hotel.findMany();
 }
 
-async function payedTicketUser(id: number) {
-  return prisma.enrollment.findFirst({
+async function userPaidTicket(id: number) {
+  return prisma.ticket.findFirst({
     where: {
-      id,
+      enrollmentId: id,
+      status: 'PAID',
     },
     include: {
-      Ticket: {
-        where: { status: 'PAID' },
-        include: {
-          TicketType: {
-            select: {
-              isRemote: true,
-              includesHotel: true,
-            },
-          },
+      TicketType: {
+        select: {
+          isRemote: true,
+          includesHotel: true,
         },
       },
     },
@@ -36,6 +32,6 @@ async function findRoomsFromHotel(id: number) {
   });
 }
 
-const hotelRepository = { findHotels, payedTicketUser, findRoomsFromHotel };
+const hotelRepository = { findHotels, userPaidTicket, findRoomsFromHotel };
 
 export default hotelRepository;

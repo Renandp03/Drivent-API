@@ -1,6 +1,6 @@
 import { prisma } from '@/config';
 
-async function getBook(userId: number) {
+async function findBook(userId: number) {
   return prisma.booking.findFirst({
     where: {
       userId,
@@ -8,6 +8,6 @@ async function getBook(userId: number) {
   });
 }
 
-const bookingRepository = { getBook };
+const bookingRepository = { findBook };
 
 export default bookingRepository;

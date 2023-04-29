@@ -18,9 +18,9 @@ export async function postBook(req: AuthenticatedRequest, res: Response) {
     const userId = req.userId;
     const { roomId } = req.body;
     const newBook = await bookingServices.addBook(userId, roomId);
-    res.status(httpStatus.CREATED).send(newBook);
+    res.status(httpStatus.OK).send(newBook);
   } catch (error) {
-    res.sendStatus(httpStatus.FORBIDDEN);
+    res.status(error.status).send(error.message);
   }
 }
 
@@ -32,6 +32,6 @@ export async function updateBook(req: AuthenticatedRequest, res: Response) {
     const book = await bookingServices.changeBook(userId, bookId, roomId);
     res.send(book);
   } catch (error) {
-    res.sendStatus(httpStatus.NOT_FOUND);
+    res.status(error.status).send(error.message);
   }
 }

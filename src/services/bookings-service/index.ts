@@ -24,7 +24,7 @@ async function addBook(userId: number, roomId: number) {
   if (ticketType.includesHotel == false) throw genericError(403, 'this ticket do not includes hotel.');
 
   const room = await bookingRepository.findRoomById(roomId);
-  if (!room) throw notFoundError;
+  if (!room) throw genericError(404, 'not found error');
   if (room.capacity == room.Booking.length) throw genericError(403, 'no capacity');
 
   const data = await bookingRepository.createBook(userId, roomId);

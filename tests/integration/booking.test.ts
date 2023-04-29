@@ -89,6 +89,6 @@ describe('POST /booking', () => {
 
     const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send({ roomId: room.id });
 
-    expect(response.status).toBe(httpStatus.CREATED);
+    expect(response.status).toBe(httpStatus.OK);
   });
 });

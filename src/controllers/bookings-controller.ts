@@ -27,11 +27,11 @@ export async function postBook(req: AuthenticatedRequest, res: Response) {
 export async function putBook(req: AuthenticatedRequest, res: Response) {
   try {
     const userId = req.userId;
-    const bookId = Number(req.params);
+    const bookId = Number(req.params.bookingId);
     const { roomId } = req.body;
-    console.log(userId, bookId, roomId);
+    console.log(req.userId, bookId, roomId);
     const book = await bookingServices.changeBook(userId, bookId, roomId);
-    res.send(book);
+    res.send({ bookingId: book.id });
   } catch (error) {
     res.status(error.status).send(error.message);
   }

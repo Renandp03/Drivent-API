@@ -39,7 +39,8 @@ async function changeBook(userId: number, bookId: number, roomId: number) {
   if (!room) throw genericError(404, 'not found');
   if (room.capacity == room.Booking.length) throw genericError(403, 'no capacity');
 
-  return '';
+  const data = await bookingRepository.updateBook(bookId, roomId);
+  return data;
 }
 
 const bookingServices = { showBook, addBook, changeBook };

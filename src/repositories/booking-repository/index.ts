@@ -5,6 +5,10 @@ async function findBook(userId: number) {
     where: {
       userId,
     },
+    select: {
+      id: true,
+      Room: true,
+    },
   });
 }
 

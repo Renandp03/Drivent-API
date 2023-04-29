@@ -1,13 +1,17 @@
-import { generateCPF, getStates } from '@brazilian-utils/brazilian-utils';
-import faker from '@faker-js/faker';
-import dayjs from 'dayjs';
 import httpStatus from 'http-status';
-import * as jwt from 'jsonwebtoken';
+import faker from '@faker-js/faker';
 import supertest from 'supertest';
-
-import { createEnrollmentWithAddress, createUser, createhAddressWithCEP } from '../factories';
+import * as jwt from 'jsonwebtoken';
+import { TicketStatus } from '@prisma/client';
+import {
+  createNotRemoteTicketType,
+  createUser,
+  createEnrollmentWithAddress,
+  createTicket,
+  createHotel,
+  createRoom,
+} from '../factories';
 import { cleanDb, generateValidToken } from '../helpers';
-import { prisma } from '@/config';
 import app, { init } from '@/app';
 
 beforeAll(async () => {
@@ -53,5 +57,30 @@ describe('when token is valid', () => {
     const response = await server.get('/booking').set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(httpStatus.NOT_FOUND);
+  });
+});
+
+describe('POST /booking', () => {
+  it('Should respond with status 403 if user have no enrollment', async () => {
+    const user = await createUser();
+    const token = await generateValidToken(user);
+
+    const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send({ roomId: 1 });
+
+    expect(response.status).toBe(httpStatus.FORBIDDEN);
+  });
+
+  it('Should respond with status 200 and new booking', async () => {
+    const user = await createUser();
+    const token = await generateValidToken(user);
+    const enrollment = await createEnrollmentWithAddress(user);
+    const ticketType = await createNotRemoteTicketType();
+    await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+    await createHotel();
+    await createRoom();
+
+    const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send({ roomId: 1 });
+
+    expect(response.status).toBe(httpStatus.CREATED);
   });
 });

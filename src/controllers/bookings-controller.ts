@@ -18,7 +18,7 @@ export async function postBook(req: AuthenticatedRequest, res: Response) {
     const userId = req.userId;
     const roomId = req.body;
     const newBook = await bookingServices.addBook(userId, roomId);
-    res.send(newBook);
+    res.status(httpStatus.CREATED).send(newBook);
   } catch (error) {
     res.sendStatus(httpStatus.FORBIDDEN);
   }

@@ -8,6 +8,26 @@ async function findBook(userId: number) {
   });
 }
 
-const bookingRepository = { findBook };
+async function validCapacity(roomId: number) {
+  return prisma.room.findFirst({
+    where: {
+      id: roomId,
+    },
+    include: {
+      Booking: true,
+    },
+  });
+}
+
+async function createBook(userId: number, roomId: number) {
+  return prisma.booking.create({
+    data: {
+      userId,
+      roomId,
+    },
+  });
+}
+
+const bookingRepository = { findBook, validCapacity, createBook };
 
 export default bookingRepository;

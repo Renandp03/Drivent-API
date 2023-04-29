@@ -14,6 +14,8 @@ import {
 import { cleanDb, generateValidToken } from '../helpers';
 import app, { init } from '@/app';
 
+export { booking } from '../factories/booking-factory';
+
 beforeAll(async () => {
   await init();
   await cleanDb();
@@ -58,6 +60,11 @@ describe('when token is valid', () => {
 
     expect(response.status).toBe(httpStatus.NOT_FOUND);
   });
+  it('Should respond with status 200 and booking', async () => {
+    const user = await createUser();
+    const token = await generateValidToken(user);
+    const response = await server.get('/booking').set('Authorization', `Bearer ${token}`);
+  });
 });
 
 describe('POST /booking', () => {
@@ -77,9 +84,10 @@ describe('POST /booking', () => {
     const ticketType = await createNotRemoteTicketType();
     await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
     await createHotel();
-    await createRoom();
+    const room = await createRoom();
+    console.log(room);
 
-    const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send({ roomId: 1 });
+    const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send({ roomId: room.id });
 
     expect(response.status).toBe(httpStatus.CREATED);
   });

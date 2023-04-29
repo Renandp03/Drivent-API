@@ -16,10 +16,22 @@ export async function getBook(req: AuthenticatedRequest, res: Response) {
 export async function postBook(req: AuthenticatedRequest, res: Response) {
   try {
     const userId = req.userId;
-    const roomId = req.body;
+    const { roomId } = req.body;
     const newBook = await bookingServices.addBook(userId, roomId);
     res.status(httpStatus.CREATED).send(newBook);
   } catch (error) {
     res.sendStatus(httpStatus.FORBIDDEN);
+  }
+}
+
+export async function updateBook(req: AuthenticatedRequest, res: Response) {
+  try {
+    const userId = req.userId;
+    const bookId = Number(req.params);
+    const roomId = req.body;
+    const book = await bookingServices.changeBook(userId, bookId, roomId);
+    res.send(book);
+  } catch (error) {
+    res.sendStatus(httpStatus.NOT_FOUND);
   }
 }

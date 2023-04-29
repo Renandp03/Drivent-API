@@ -23,13 +23,21 @@ async function addBook(userId: number, roomId: number) {
   if (ticketType.isRemote == true) throw genericError(403, 'this is a remote show.');
   if (ticketType.includesHotel == false) throw genericError(403, 'this ticket do not includes hotel.');
 
-  const room = await bookingRepository.validCapacity(roomId);
+  const room = await bookingRepository.findRoomById(roomId);
+  if (!room) throw notFoundError;
   if (room.capacity == room.Booking.length) throw genericError(403, 'no capacity');
 
   const data = await bookingRepository.createBook(userId, roomId);
   return data;
 }
 
-const bookingServices = { showBook, addBook };
+async function changeBook(userId: number, bookId: number, roomId: number) {
+  const book = await bookingRepository.findBook(userId);
+  if (!book) throw notFoundError;
+
+  return '';
+}
+
+const bookingServices = { showBook, addBook, changeBook };
 
 export default bookingServices;

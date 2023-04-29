@@ -33,7 +33,7 @@ async function addBook(userId: number, roomId: number) {
 
 async function changeBook(userId: number, bookId: number, roomId: number) {
   const book = await bookingRepository.findBook(userId);
-  if (!book) throw notFoundError;
+  if (!book) throw genericError(403, 'no booking');
 
   return '';
 }

@@ -24,11 +24,12 @@ export async function postBook(req: AuthenticatedRequest, res: Response) {
   }
 }
 
-export async function updateBook(req: AuthenticatedRequest, res: Response) {
+export async function putBook(req: AuthenticatedRequest, res: Response) {
   try {
     const userId = req.userId;
     const bookId = Number(req.params);
-    const roomId = req.body;
+    const { roomId } = req.body;
+    console.log(userId, bookId, roomId);
     const book = await bookingServices.changeBook(userId, bookId, roomId);
     res.send(book);
   } catch (error) {

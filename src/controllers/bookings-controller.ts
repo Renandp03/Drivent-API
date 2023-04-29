@@ -7,7 +7,7 @@ export async function getBook(req: AuthenticatedRequest, res: Response) {
   try {
     const userId = req.userId;
     const book = await bookingServices.showBook(userId);
-    res.send({ bookingId: book.id });
+    res.send(book);
   } catch (error) {
     res.sendStatus(httpStatus.NOT_FOUND);
   }

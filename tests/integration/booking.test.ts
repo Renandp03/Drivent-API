@@ -183,11 +183,14 @@ describe('PUT /booking/:bookingId', () => {
     const enrollment = await createEnrollmentWithAddress(user);
     const ticketType = await createNotRemoteTicketType();
     await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-    // const room = await createRoom();
-    // const room2 = await createRoom();
+    await createHotel();
+    const room = await createRoom();
+    const newRoow = await createRoom();
+    const book = await createBooking(user.id, room.id);
 
-    // const book = await createBooking(user.id,room.id)
-
-    await server.post(`/booking/${1}`).set('Authorization', `Bearer ${token}`).send({ roomId: 1 });
+    const response = await server
+      .post(`/booking/${book.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ roomId: newRoow.id });
   });
 });

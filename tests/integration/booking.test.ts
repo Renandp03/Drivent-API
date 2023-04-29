@@ -14,9 +14,8 @@ import {
   createRoom,
 } from '../factories';
 import { cleanDb, generateValidToken } from '../helpers';
+import { booking, createBooking } from '../factories/booking-factory';
 import app, { init } from '@/app';
-
-export { booking } from '../factories/booking-factory';
 
 beforeAll(async () => {
   await init();
@@ -170,10 +169,25 @@ describe('When token is valid', () => {
     await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
     await createHotel();
     const room = await createRoom();
-    console.log(room);
 
     const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send({ roomId: room.id });
 
     expect(response.status).toBe(httpStatus.OK);
+  });
+});
+
+describe('PUT /:bookingId', () => {
+  it('test', async () => {
+    const user = await createUser();
+    const token = await generateValidToken(user);
+    const enrollment = await createEnrollmentWithAddress(user);
+    const ticketType = await createNotRemoteTicketType();
+    await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+    const room = await createRoom();
+    const room2 = await createRoom();
+
+    const book = await createBooking(user.id, room.id);
+
+    await server.post(`/booking/${book.id}`).set('Authorization', `Bearer ${token}`).send({ roomId: room2.id });
   });
 });

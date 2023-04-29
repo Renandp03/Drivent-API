@@ -35,6 +35,10 @@ async function changeBook(userId: number, bookId: number, roomId: number) {
   const book = await bookingRepository.findBook(userId);
   if (!book) throw genericError(403, 'no booking');
 
+  const room = await bookingRepository.findRoomById(roomId);
+  if (!room) throw genericError(404, 'not found');
+  if (room.capacity == room.Booking.length) throw genericError(403, 'no capacity');
+
   return '';
 }
 

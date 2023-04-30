@@ -20,3 +20,13 @@ export async function createRoom() {
     },
   });
 }
+
+export async function createNotCapacityRoom() {
+  return prisma.room.create({
+    data: {
+      name: faker.company.companyName(),
+      capacity: 0,
+      hotelId: 1,
+    },
+  });
+}

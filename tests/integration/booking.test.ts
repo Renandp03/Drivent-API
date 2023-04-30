@@ -12,6 +12,7 @@ import {
   createTicket,
   createHotel,
   createRoom,
+  createNotCapacityRoom
 } from '../factories';
 import { cleanDb, generateValidToken } from '../helpers';
 import { createBooking } from '../factories/booking-factory';
@@ -224,6 +225,43 @@ describe('When token is valid', () => {
       .send({ roomId: 0});
 
     expect(response.status).toBe(httpStatus.NOT_FOUND);
+  });
+
+  it('Should return with status 403 if user have no booking', async () => {
+    const user = await createUser();
+    const token = await generateValidToken(user);
+    const enrollment = await createEnrollmentWithAddress(user);
+    const ticketType = await createNotRemoteTicketType();
+    await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+    await createHotel();
+    const room = await createRoom();
+    const newRoow = await createRoom();
+
+    const response = await server
+      .put(`/booking/0`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ roomId: newRoow.id });
+
+    expect(response.status).toBe(httpStatus.FORBIDDEN);
+  });
+
+  it('Should return with status 403 if roomId have no capacity', async () => {
+    const user = await createUser();
+    const token = await generateValidToken(user);
+    const enrollment = await createEnrollmentWithAddress(user);
+    const ticketType = await createNotRemoteTicketType();
+    await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+    await createHotel();
+    const room = await createRoom();
+    const newRoow = await createNotCapacityRoom();
+    const book = await createBooking(user.id, room.id);
+
+    const response = await server
+      .put(`/booking/${book.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ roomId: newRoow.id });
+
+    expect(response.status).toBe(httpStatus.FORBIDDEN);
   });
 
   it('Should return with status 200 and bookingId', async () => {

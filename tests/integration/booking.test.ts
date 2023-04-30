@@ -173,7 +173,8 @@ describe('When token is valid', () => {
     const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send({ roomId: room.id });
 
     expect(response.status).toBe(httpStatus.OK);
-    expect(response.body).toMatchObject({ bookingId: expect.any(Number) });
+    expect(response.body).toMatchObject({"bookingId":expect.any(Number)});
+
   });
 });
 
@@ -220,7 +221,7 @@ describe('When token is valid', () => {
     const response = await server
       .put(`/booking/${book.id}`)
       .set('Authorization', `Bearer ${token}`)
-      .send({ roomId: 0 });
+      .send({ roomId: 0});
 
     expect(response.status).toBe(httpStatus.NOT_FOUND);
   });
@@ -242,6 +243,7 @@ describe('When token is valid', () => {
       .send({ roomId: newRoow.id });
 
     expect(response.status).toBe(httpStatus.OK);
-    expect(response.body).toMatchObject({ bookingId: expect.any(Number) });
+    expect(response.body).toMatchObject({"bookingId":expect.any(Number)});
   });
 });
+

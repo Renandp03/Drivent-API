@@ -173,11 +173,59 @@ describe('When token is valid', () => {
     const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send({ roomId: room.id });
 
     expect(response.status).toBe(httpStatus.OK);
+    expect(response.body).toMatchObject({ bookingId: expect.any(Number) });
   });
 });
 
 describe('PUT /booking/:bookingId', () => {
-  it('test', async () => {
+  it('should respond with status 401 if no token is given', async () => {
+    const userWithoutSession = await createUser();
+    const room = await createRoom();
+    const book = await createBooking(userWithoutSession.id, room.id);
+    const response = await server.put(`/booking/${book.id}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it('should respond with status 401 if given token is not valid', async () => {
+    const userWithoutSession = await createUser();
+    const token = faker.lorem.word();
+    const room = await createRoom();
+    const book = await createBooking(userWithoutSession.id, room.id);
+
+    const response = await server.put(`/booking/${book.id}`).set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it('should respond with status 401 if there is no session for given token', async () => {
+    const userWithoutSession = await createUser();
+    const token = jwt.sign({ userId: userWithoutSession.id }, process.env.JWT_SECRET);
+    const room = await createRoom();
+    const book = await createBooking(userWithoutSession.id, room.id);
+
+    const response = await server.put(`/booking/${book.id}`).set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+});
+
+describe('When token is valid', () => {
+  it('Should return with status 404 if roomId no not exist', async () => {
+    const user = await createUser();
+    const token = await generateValidToken(user);
+    const room = await createRoom();
+    const book = await createBooking(user.id, room.id);
+
+    const response = await server
+      .put(`/booking/${book.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ roomId: 0 });
+
+    expect(response.status).toBe(httpStatus.NOT_FOUND);
+  });
+
+  it('Should return with status 200 and bookingId', async () => {
     const user = await createUser();
     const token = await generateValidToken(user);
     const enrollment = await createEnrollmentWithAddress(user);
@@ -189,8 +237,11 @@ describe('PUT /booking/:bookingId', () => {
     const book = await createBooking(user.id, room.id);
 
     const response = await server
-      .post(`/booking/${book.id}`)
+      .put(`/booking/${book.id}`)
       .set('Authorization', `Bearer ${token}`)
       .send({ roomId: newRoow.id });
+
+    expect(response.status).toBe(httpStatus.OK);
+    expect(response.body).toMatchObject({ bookingId: expect.any(Number) });
   });
 });

@@ -5,18 +5,18 @@ import { prisma } from '@/config';
 export async function createHotel() {
   return prisma.hotel.create({
     data: {
-      name: 'HotelTest',
-      image: 'urlfromimage',
+      name: faker.company.companyName(),
+      image: faker.image.imageUrl(),
     },
   });
 }
 
-export async function createRoom() {
+export async function createRoom(hotelId:number) {
   return prisma.room.create({
     data: {
       name: faker.company.companyName(),
       capacity: 2,
-      hotelId: 1,
+      hotelId
     },
   });
 }

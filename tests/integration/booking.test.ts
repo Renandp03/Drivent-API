@@ -65,7 +65,26 @@ describe('when token is valid', () => {
   it('Should respond with status 200 and booking', async () => {
     const user = await createUser();
     const token = await generateValidToken(user);
+    const enrollment = await createEnrollmentWithAddress(user);
+    const ticketType = await createNotRemoteTicketType();
+    await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+    const hotel = await createHotel();
+    const room = await createRoom(hotel.id);
+    await createBooking(user.id,room.id)
     const response = await server.get('/booking').set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.OK);
+    expect(response.body).toMatchObject({
+      id:expect.any(Number),
+      Room:expect.objectContaining({
+        id:expect.any(Number),
+        name:expect.any(String),
+        capacity:expect.any(Number),
+        hotelId:expect.any(Number),
+        createdAt:expect.any(String),
+        updatedAt:expect.any(String),
+      })
+    })
   });
 });
 
@@ -168,8 +187,8 @@ describe('When token is valid', () => {
     const enrollment = await createEnrollmentWithAddress(user);
     const ticketType = await createNotRemoteTicketType();
     await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-    await createHotel();
-    const room = await createRoom();
+    const hotel = await createHotel();
+    const room = await createRoom(hotel.id);
 
     const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send({ roomId: room.id });
 
@@ -182,7 +201,8 @@ describe('When token is valid', () => {
 describe('PUT /booking/:bookingId', () => {
   it('should respond with status 401 if no token is given', async () => {
     const userWithoutSession = await createUser();
-    const room = await createRoom();
+    const hotel = await createHotel();
+    const room = await createRoom(hotel.id);
     const book = await createBooking(userWithoutSession.id, room.id);
     const response = await server.put(`/booking/${book.id}`);
 
@@ -192,7 +212,8 @@ describe('PUT /booking/:bookingId', () => {
   it('should respond with status 401 if given token is not valid', async () => {
     const userWithoutSession = await createUser();
     const token = faker.lorem.word();
-    const room = await createRoom();
+    const hotel = await createHotel();
+    const room = await createRoom(hotel.id);
     const book = await createBooking(userWithoutSession.id, room.id);
 
     const response = await server.put(`/booking/${book.id}`).set('Authorization', `Bearer ${token}`);
@@ -203,7 +224,8 @@ describe('PUT /booking/:bookingId', () => {
   it('should respond with status 401 if there is no session for given token', async () => {
     const userWithoutSession = await createUser();
     const token = jwt.sign({ userId: userWithoutSession.id }, process.env.JWT_SECRET);
-    const room = await createRoom();
+    const hotel = await createHotel();
+    const room = await createRoom(hotel.id);
     const book = await createBooking(userWithoutSession.id, room.id);
 
     const response = await server.put(`/booking/${book.id}`).set('Authorization', `Bearer ${token}`);
@@ -216,7 +238,8 @@ describe('When token is valid', () => {
   it('Should return with status 404 if roomId no not exist', async () => {
     const user = await createUser();
     const token = await generateValidToken(user);
-    const room = await createRoom();
+    const hotel = await createHotel();
+    const room = await createRoom(hotel.id);
     const book = await createBooking(user.id, room.id);
 
     const response = await server
@@ -233,9 +256,9 @@ describe('When token is valid', () => {
     const enrollment = await createEnrollmentWithAddress(user);
     const ticketType = await createNotRemoteTicketType();
     await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-    await createHotel();
-    const room = await createRoom();
-    const newRoow = await createRoom();
+    const hotel = await createHotel();
+    const room = await createRoom(hotel.id);
+    const newRoow = await createRoom(hotel.id);
 
     const response = await server
       .put(`/booking/0`)
@@ -251,8 +274,8 @@ describe('When token is valid', () => {
     const enrollment = await createEnrollmentWithAddress(user);
     const ticketType = await createNotRemoteTicketType();
     await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-    await createHotel();
-    const room = await createRoom();
+    const hotel = await createHotel();
+    const room = await createRoom(hotel.id);
     const newRoow = await createNotCapacityRoom();
     const book = await createBooking(user.id, room.id);
 
@@ -270,9 +293,9 @@ describe('When token is valid', () => {
     const enrollment = await createEnrollmentWithAddress(user);
     const ticketType = await createNotRemoteTicketType();
     await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-    await createHotel();
-    const room = await createRoom();
-    const newRoow = await createRoom();
+    const hotel = await createHotel();
+    const room = await createRoom(hotel.id);
+    const newRoow = await createRoom(hotel.id);
     const book = await createBooking(user.id, room.id);
 
     const response = await server

@@ -6,7 +6,7 @@ import { genericError } from '@/errors/generic-error';
 
 async function showBook(userId: number) {
   const data = await bookingRepository.findBook(userId);
-  if (!data) throw notFoundError;
+  if (!data) throw notFoundError();
 
   return data;
 }

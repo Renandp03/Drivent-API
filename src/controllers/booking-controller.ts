@@ -9,7 +9,7 @@ export async function getBook(req: AuthenticatedRequest, res: Response) {
     const book = await bookingServices.showBook(userId);
     res.send(book);
   } catch (error) {
-    res.sendStatus(httpStatus.NOT_FOUND);
+    res.status(httpStatus.NOT_FOUND).send(error.message);
   }
 }
 
